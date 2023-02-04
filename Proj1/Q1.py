@@ -27,16 +27,19 @@ Hplot.AxLabels(X = "Elevation Difference (m)", Y = "Discharge Rate (m $^3$/s)")
 Hplot.SetLim(Left = 65, Right = 90, Top = .25, Bottom = 0.1)
 
 
-Tcounter = 0
-for T in Trange:
+Tcounter = 0 #Plot hue incrementer
+for T in Trange: #Loop over temperature contour lines
     Tcounter +=1
 
+    #obtain properties at correct temperature
     mu = getVisc(T); #visocisty, in Pa.s
     rho = getDensity(T-273.15); #density, in kg/m3
 
-    #Guess values for 1st iter
+    
     V2_List = [] #this gathers v's for each height z.
     for Z in dZ:
+
+        #Guess values for 1st iter
         print("Running at", Z)
         fdarcy_1 = compFdarcy_guess(eps,D1); print("f_Darcy1 = ",fdarcy_1)
         fdarcy_2 = compFdarcy_guess(eps,D2); print("f_Darcy2 = ",fdarcy_2)
@@ -44,7 +47,7 @@ for T in Trange:
 
         V_2 = 0 #storage value 
     
-        darcyDiff1 = 10000; darcyDiff2 = 10000
+        darcyDiff1 = 10000; darcyDiff2 = 10000 #convergeance criterion past value
 
         counter = 0
         while True:
@@ -98,20 +101,10 @@ for T in Trange:
     Hplot.Plot((dZ, Q2), Color = Clr)
 
 
+
 Hplot.plt.legend(["T = 10 $^o C$","T = 20 $^o C$","T = 30 $^o C$","T = 40 $^o C$"], frameon = False)
 Hplot.Finalize()
 Hplot.Show()
 
 
     
-
-
-# HPlot = PlotAssist.HigsPlot()
-# Clr = EZColors.CustomColors(colorLabel = 'red')
-# HPlot.AxLabels(X = "Time (s)", Y = "Pressure (Pa)")
-# #HPlot.SetTicks('Y',0.0,1,0.2)
-# HPlot.SetLim(Left = 0, Right = 250, Top = 100500, Bottom = 100200)
-# #HPlot.SetTicks('Y',1,11,1)
-# HPlot.Plot((Time/1000, Pressure), Color = Clr)
-# HPlot.Finalize()
-# HPlot.Show()
