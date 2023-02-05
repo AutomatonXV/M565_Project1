@@ -17,9 +17,9 @@ g0 = 9.81; # gravity, in m/s2
 etol = 0.01; #convergeance criteria
 
 dZ = np.linspace(66,88,100) #height, in meters
-#dZ = np.array([66])
+dZ = np.array([66])
 Trange = np.linspace(10,40,4)+273.15; #temperature, in kelvin
-#Trange = np.array([10+273.15])
+Trange = np.array([10+273.15])
 
 
 Hplot = PlotAssist.HigsPlot()
@@ -34,6 +34,7 @@ for T in Trange: #Loop over temperature contour lines
     #obtain properties at correct temperature
     mu = getVisc(T); #visocisty, in Pa.s
     rho = getDensity(T-273.15); #density, in kg/m3
+    print(mu, rho)
 
     
     V2_List = [] #this gathers v's for each height z.
@@ -63,12 +64,14 @@ for T in Trange: #Loop over temperature contour lines
             Hdisch = (1/(2*g0))
 
             #the formula is dZ = V^2[A]
-            A = Hentrance * (0.25**2) + Hfric1 * (0.25 **2) + Hsc + Hfric2 + Hdisch
+            A = (1/(2*g0)) + Hentrance * (0.25**2) + Hfric1 * (0.25 **2) + Hsc + Hfric2 + Hdisch
             V_2 = np.sqrt(Z/A)
             V_1 = V_2 * A2/A1
             Re_1 = compRe(rho, mu, D1, V_1)
             Re_2 = compRe(rho,mu,D2,V_2) 
-            
+
+
+            print("A is", A)
             print("Obtained V1", V_1)
             print("Obtained V2", V_2)
             print("Calculated Re1", Re_1)
@@ -93,8 +96,8 @@ for T in Trange: #Loop over temperature contour lines
         V2_List.append(V_2)
     
     #print("Here is V2", V2_List)
-    Q2 = A2 * np.array(V2_List) / A1
-    #print("Here is Q2", Q2)
+    Q2 = A2 * np.array(V2_List) 
+    print("Here is Q2", Q2)
     print("Here is", V2_List)
     Clr = EZColors.CustomColors(colorLabel= 'red')
     Clr.HueShift(Percent=.045*(5-Tcounter))
