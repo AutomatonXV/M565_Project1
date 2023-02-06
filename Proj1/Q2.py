@@ -18,10 +18,10 @@ A1 = np.pi * (1/4) * D1 ** 2; # m2
 A2 = np.pi * (1/4) * D2 ** 2; # m2 
 A3 = np.pi * (1/4) * D3 ** 2; # m2 
 
-Trange = np.linspace(10,40,4)+273.15 #Temperature, in Kelvin
+Trange = np.linspace(10,40,100)+273.15 #Temperature, in Kelvin
 #Trange = np.array([10+273.15]) #Temperature, in Kelvin
 
-etol = 0.01; # tolerance. If etol  | Q1 - Q2 - Q3 | < etol, life is good
+etol = 0.0001; # tolerance. If etol  | Q1 - Q2 - Q3 | < etol, life is good
 eps = 4 * 10 ** (-6); #epsilon roughness, in meters
 g0 = 9.81; # gravity, in m/s2
 
@@ -36,7 +36,7 @@ for T in Trange:
     mu = getVisc(T); #visocisty, in Pa.s
     rho = getDensity(T-273.15); #density, in kg/m3
 
-    dZ = .33; # meters, decrement value. Ensure it can never reach a whole number
+    dZ = .6; # meters, decrement value. Ensure it can never reach a whole number
 
     #GUESS VALUES
     Zp = 102 ; # meters, guess value. Iterate this
@@ -85,25 +85,30 @@ for T in Trange:
         V1, fd1, Re1 = DarcyIterator(fd1, L1, D1, s1*(Zp - Z_A))
         V2, fd2, Re2 = DarcyIterator(fd2, L2, D2, s2*(Zp - Z_B))
         V3, fd3, Re3 = DarcyIterator(fd3, L3, D3, s3*(Zp - Z_C))
-        
+        #print(Zp, V1, fd1, Re1)
         Q1 = A1 * V1; Q2 = A2 * V2; Q3 = A3 * V3
         
         
         
         Q_err = s1*Q1 + s2*Q2 + s3*Q3
-        #print("Qerror is", Q_err)
-        #print("Discharge Q1 is", s1 * Q1)
-        #print("Discharge Q2 is", s2 * Q2)
-        #print("Discharge Q3 is", s3 * Q3)
+        # print("-"*20)
+        # print("Running for Zp ", Zp)
+        # print("Qerror is", Q_err)
+        # print("Discharge Q1 is", s1 * Q1)
+        # print("Discharge Q2 is", s2 * Q2)
+        # print("Discharge Q3 is", s3 * Q3)
+        # print("dZ", dZ)
+        # print("-"*20)
 
         #Exit condition reached.
-        if (np.abs(Q_err) < etol or Count > 10000): Q1List.append(s1*Q1); Q2List.append(s2*Q2); Q3List.append(s3*Q3); ZpList.append(Zp); break
+        if (np.abs(Q_err) < etol): Q1List.append(s1*Q1); Q2List.append(s2*Q2); Q3List.append(s3*Q3); ZpList.append(Zp); break
             
         #Not reached? If Qerr is positive, then bring zp down, else up
         if Q_err > 0: 
-            Zp -= dZ * 0.9
+            Zp -= dZ 
         else:
-            Zp += dZ * 0.9
+            Zp += dZ 
+        dZ = 0.9 * dZ
 
 print("+"*20)
 Q1List = np.array(Q1List) ; Q2List = np.array(Q2List) ; Q3List = np.array(Q3List)
@@ -133,7 +138,7 @@ Hplot.Show()
 Clr = EZColors.CustomColors(colorLabel='black')
 Hplot2 = PlotAssist.HigsPlot()
 Hplot2.AxLabels(X = "Temperature ($^o C$)", Y = "Net Sum Discharge Rate (m $^3$/s)")
-Hplot2.SetLim(Left = 10, Right = 40, Top = .05, Bottom = -0.05)
+Hplot2.SetLim(Left = 10, Right = 40, Top = etol, Bottom = -etol)
 Hplot2.Plot((Trange-273.15, QSum),Color = Clr)
 Hplot2.Finalize()
 Hplot2.Show()

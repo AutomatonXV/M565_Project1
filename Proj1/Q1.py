@@ -4,8 +4,8 @@ import PlotAssist, EZColors
 import matplotlib.pyplot as plt
 
 
-L1 = 5000; # pipe length, in meter
-L2 = 15000 # pipe length, in  meter
+L1 = 20000; # pipe length, in meter
+L2 = 000 # pipe length, in  meter
 
 D1 = 8 * 0.0254; #pipe dia, meter from in
 D2 = 4 * 0.0254; #pipe dia, meter from in
@@ -16,15 +16,15 @@ eps = 4 * 10 ** (-6); #epsilon roughness, in meters
 g0 = 9.81; # gravity, in m/s2
 etol = 0.01; #convergeance criteria
 
-dZ = np.linspace(66,88,100) #height, in meters
-dZ = np.array([66])
+dZ = np.linspace(68,88,100) #height, in meters
+dZ = np.array([88])
 Trange = np.linspace(10,40,4)+273.15; #temperature, in kelvin
-Trange = np.array([10+273.15])
+Trange = np.array([40+273.15])
 
 
 Hplot = PlotAssist.HigsPlot()
 Hplot.AxLabels(X = "Elevation Difference (m)", Y = "Discharge Rate (m $^3$/s)")
-Hplot.SetLim(Left = 65, Right = 90, Top = .25, Bottom = 0.1)
+Hplot.SetLim(Left = 65, Right = 90, Top = .04, Bottom = 0.025)
 
 
 Tcounter = 0 #Plot hue incrementer
@@ -64,7 +64,7 @@ for T in Trange: #Loop over temperature contour lines
             Hdisch = (1/(2*g0))
 
             #the formula is dZ = V^2[A]
-            A = (1/(2*g0)) + Hentrance * (0.25**2) + Hfric1 * (0.25 **2) + Hsc + Hfric2 + Hdisch
+            A =  Hentrance * (0.25**2) + Hfric1 * (0.25 **2) + Hsc + Hfric2 + Hdisch
             V_2 = np.sqrt(Z/A)
             V_1 = V_2 * A2/A1
             Re_1 = compRe(rho, mu, D1, V_1)
@@ -98,7 +98,7 @@ for T in Trange: #Loop over temperature contour lines
     #print("Here is V2", V2_List)
     Q2 = A2 * np.array(V2_List) 
     print("Here is Q2", Q2)
-    print("Here is", V2_List)
+    #print("Here is", V2_List)
     Clr = EZColors.CustomColors(colorLabel= 'red')
     Clr.HueShift(Percent=.045*(5-Tcounter))
     Hplot.Plot((dZ, Q2), Color = Clr)
